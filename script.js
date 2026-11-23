@@ -119,13 +119,19 @@ if (form) {
 
     const data = new FormData(form);
     data.set('odeslano', new Date().toLocaleString('cs-CZ'));
+    data.set('_subject', 'Nová poptávka z webu mareksevela.com');
+    // technická pole, která do e-mailu nepatří
+    data.delete('form-name');
+    data.delete('bot-field');
 
     try {
-      // poptávka se uloží do seznamu na Netlify (Forms)
-      const response = await fetch('/', {
+      // Poptávka jde na Formspree — službu, která formuláře přijímá a ukládá.
+      // Funguje odkudkoliv (GitHub Pages, Netlify, vlastní hosting), protože
+      // nezávisí na tom, kde web bydlí.
+      const response = await fetch('https://formspree.io/f/xvzwlbak', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data).toString(),
+        headers: { Accept: 'application/json' },
+        body: data,
       });
 
       if (!response.ok) throw new Error('Server error');
