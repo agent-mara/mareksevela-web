@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marek Ševela — AI nástroje, které pracují za vás</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            dark:    '#08080f',
+            dark2:   '#0d0d1a',
+            dark3:   '#11111e',
+            darkcard:'#15152a',
+          },
+          keyframes: {
+            float:    { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+            fadeup:   { '0%': { opacity:'0', transform:'translateY(30px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            shimmer:  { '0%': { backgroundPosition: '-200% center' }, '100%': { backgroundPosition: '200% center' } },
+            blobmove: { '0%,100%': { borderRadius:'60% 40% 30% 70%/60% 30% 70% 40%' }, '50%': { borderRadius:'30% 60% 70% 40%/50% 60% 30% 60%' } },
+          },
+          animation: {
+            float:    'float 6s ease-in-out infinite',
+            fadeup:   'fadeup 0.7s ease forwards',
+            shimmer:  'shimmer 3s linear infinite',
+            blobmove: 'blobmove 8s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    // animace zapneme jen když je prohlížeč zvládne a návštěvník je nemá vypnuté
+    (function () {
+      var r = document.documentElement;
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) r.classList.add('js-motion');
+      // pojistka: kdyby se knihovny nenačetly, po 2,5 s ukážeme obsah normálně
+      setTimeout(function () {
+        if (!r.classList.contains('intro-done')) r.classList.remove('js-motion');
+      }, 2500);
+    })();
+  </script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body class="bg-dark text-white font-sans antialiased overflow-x-hidden">
+
+  <!-- ═══════════════════════════════════════════ NAVBAR ═══ -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="#home" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/30">
+          MŠ
+        </div>
+        <span class="font-semibold text-white/90 group-hover:text-white transition-colors">Marek Ševela</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <div class="hidden md:flex items-center gap-6">
+        <a href="#weby"         class="nav-link text-sm text-white/60 hover:text-white transition-colors">Weby</a>
+        <a href="#agenti"       class="nav-link text-sm text-white/60 hover:text-white transition-colors">Agenti</a>
+        <a href="#automatizace" class="nav-link text-sm text-white/60 hover:text-white transition-colors">Automatizace</a>
+        <a href="#skoleni"      class="nav-link text-sm text-white/60 hover:text-white transition-colors">Školení</a>
+        <a href="#o-mne"        class="nav-link text-sm text-white/60 hover:text-white transition-colors">O mně</a>
+        <a href="#kontakt"      class="nav-link text-sm text-white/60 hover:text-white transition-colors">Kontakt</a>
+      </div>
+
+      <!-- CTA -->
+      <div class="hidden md:block">
+        <a href="#kontakt" class="btn-primary text-sm px-5 py-2.5">Konzultace zdarma</a>
+      </div>
+
+      <!-- Hamburger -->
+      <button id="menuBtn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="mobile-menu md:hidden">
+      <div class="px-6 py-6 flex flex-col gap-5 bg-dark2 border-t border-white/5">
+        <a href="#weby"         class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">Weby</a>
+        <a href="#agenti"       class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">Agenti</a>
+        <a href="#automatizace" class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">Automatizace</a>
+        <a href="#skoleni"      class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">Školení</a>
+        <a href="#o-mne"        class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">O mně</a>
+        <a href="#kontakt"      class="text-white/70 hover:text-white transition-colors" onclick="closeMobileMenu()">Kontakt</a>
+        <a href="#kontakt"      class="btn-primary text-center text-sm py-3" onclick="closeMobileMenu()">Konzultace zdarma</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════ HERO ═══════ -->
+  <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+
+    <!-- Background blobs -->
+    <div class="blob blob-purple"></div>
+    <div class="blob blob-blue"></div>
+
+    <!-- Grid overlay -->
+    <div class="absolute inset-0 grid-bg opacity-20"></div>
+
+    <!-- 3D síť, která reaguje na kurzor -->
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+    <!-- Content -->
+    <div class="hero-inner relative z-10 max-w-5xl mx-auto px-6 text-center">
+
+      <!-- Badge -->
+      <div class="hero-badge inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-sm mb-8 backdrop-blur-sm">
+        <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+        Specialista na AI automatizace
+      </div>
+
+      <!-- Headline -->
+      <h1 class="hero-title text-5xl md:text-7xl font-extrabold leading-tight mb-6 tracking-tight">
+        <span class="hl"><span class="hl-i">AI nástroje,</span></span>
+        <span class="hl"><span class="hl-i gradient-text">které pracují</span></span>
+        <span class="hl"><span class="hl-i gradient-text">za vás.</span></span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="hero-sub text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Weby, AI agenti, automatizace a školení na míru.
+        Od webu, který se hýbe, po agenta, co za vás hlídá poštu — navrhnu to i spustím.
+      </p>
+
+      <!-- CTAs -->
+      <div class="hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <a href="#kontakt"      class="btn-primary w-full sm:w-auto px-8 py-4 text-base">Začít spolupráci →</a>
+        <a href="#weby" class="btn-secondary w-full sm:w-auto px-8 py-4 text-base">Moje práce</a>
+      </div>
+
+      <!-- Floating stats -->
+      <div class="hero-stats flex flex-wrap items-center justify-center gap-4">
+        <div class="stat-card animate-float" style="animation-delay:0s">
+          <span class="stat-number">50 000</span>
+          <span class="stat-label">mailů / den</span>
+        </div>
+        <div class="stat-card animate-float" style="animation-delay:0.5s">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">na míru</span>
+        </div>
+        <div class="stat-card animate-float" style="animation-delay:1s">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">automatizace běží</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="text-xs text-white/50 tracking-widest uppercase">Scroll</span>
+      <div class="w-px h-10 bg-gradient-to-b from-white/50 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ CO DĚLÁM ════ -->
+  <!-- Běžící pás -->
+  <div class="pas" aria-hidden="true">
+    <div class="pas-stopa">
+      <span class="pas-rada">
+        <span>Tvorba webů</span><span class="pas-tecka"></span>
+        <span>AI agenti</span><span class="pas-tecka"></span>
+        <span>Automatizace</span><span class="pas-tecka"></span>
+        <span>AI školení na míru</span><span class="pas-tecka"></span>
+        <span>Motion weby</span><span class="pas-tecka"></span>
+      </span>
+      <span class="pas-rada">
+        <span>Tvorba webů</span><span class="pas-tecka"></span>
+        <span>AI agenti</span><span class="pas-tecka"></span>
+        <span>Automatizace</span><span class="pas-tecka"></span>
+        <span>AI školení na míru</span><span class="pas-tecka"></span>
+        <span>Motion weby</span><span class="pas-tecka"></span>
+      </span>
+    </div>
+  </div>
+
+  <section id="sluzby" class="py-24 px-6 relative">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Co nabízím</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Co pro vás <span class="gradient-text">udělám</span></h2>
+        <p class="text-white/40 max-w-xl mx-auto">Čtyři věci, které umím do detailu — a které spolu umí fungovat jako jeden celek.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="service-card-featured reveal" style="animation-delay:0s">
+          <div class="service-icon-lg bg-sky-500/15 text-sky-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-3">Tvorba webů</h3>
+            <p class="text-white/50 leading-relaxed mb-5">Weby stavím od nuly na míru, ne ze šablony. Včetně animací, které web rozhýbou a udrží na něm pozornost.</p>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Návrh, texty i realizace</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Animace a pohyb (motion web)</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Rychlý a čitelný i na mobilu</li>
+            </ul>
+          </div>
+          <a href="#weby" class="btn-primary mt-6 text-sm py-3 px-6 inline-block self-start">Moje weby</a>
+        </div>
+
+        <div class="service-card-featured reveal" style="animation-delay:0.1s">
+          <div class="service-icon-lg bg-violet-500/15 text-violet-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 1.5a.75.75 0 01.75.75V4.5h3a3 3 0 013 3v8.25a3 3 0 01-3 3h-7.5a3 3 0 01-3-3V7.5a3 3 0 013-3h3V2.25A.75.75 0 0112 1.5zM9 10.5h.008v.008H9V10.5zm6 0h.008v.008H15V10.5zM9.75 15h4.5M3 12.75v3m18-3v3" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-3">AI agenti</h3>
+            <p class="text-white/50 leading-relaxed mb-5">Agent je pomocník, který běží sám na pozadí — hlídá, třídí, odpovídá a dá vědět jen to podstatné.</p>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Hlídání e-mailové schránky</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Agent na míru vašemu procesu</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Napojení na nástroje, co už máte</li>
+            </ul>
+          </div>
+          <a href="#agenti" class="btn-primary mt-6 text-sm py-3 px-6 inline-block self-start">Ukázky agentů</a>
+        </div>
+
+        <div class="service-card-featured reveal" style="animation-delay:0.2s">
+          <div class="service-icon-lg bg-blue-500/15 text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-3">Automatizace na míru</h3>
+            <p class="text-white/50 leading-relaxed mb-5">Navrhuji a spouštím systémy, které za vás dělají rutinu. Ušetříte hodiny práce každý týden.</p>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Analýza vašich procesů zdarma</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Propojení všech vašich nástrojů</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Podpora a správa po spuštění</li>
+            </ul>
+          </div>
+          <a href="#automatizace" class="btn-primary mt-6 text-sm py-3 px-6 inline-block self-start">Ukázky automatizací</a>
+        </div>
+
+        <div class="service-card-featured reveal" style="animation-delay:0.3s">
+          <div class="service-icon-lg bg-emerald-500/15 text-emerald-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-3">AI školení na míru</h3>
+            <p class="text-white/50 leading-relaxed mb-5">Naučím vás i váš tým pracovat s AI prakticky — na vašich úkolech, ve vašem oboru, bez zbytečné teorie.</p>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Individuálně i pro firemní tým</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>ChatGPT, Make, Zapier a další</li>
+              <li class="flex items-center gap-2 text-sm text-white/60"><span class="check-dot"></span>Praktické ukázky z vašeho byznysu</li>
+            </ul>
+          </div>
+          <a href="#skoleni" class="btn-primary mt-6 text-sm py-3 px-6 inline-block self-start">Chci školení</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ WEBY ════════ -->
+  <section id="weby" class="py-24 px-6 relative bg-dark2">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Ukázky práce</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Weby, které jsem <span class="gradient-text">udělal</span></h2>
+        <p class="text-white/40 max-w-xl mx-auto">Každý web stavím na míru — design, texty, fotky i pohyb. Žádná šablona, do které se obsah nacpe.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <article class="web-card reveal" style="animation-delay:0.0s">
+          <div class="web-shot">
+            <img src="reference/orbit.jpg" alt="Náhled webu Orbit — koncept pro AI startup" loading="lazy" />
+          </div>
+          <div class="p-6">
+            <div class="tag tag-violet">Koncept · 3D web</div>
+            <h3 class="text-xl font-bold mt-3 mb-2">Orbit</h3>
+            <p class="text-white/50 text-sm leading-relaxed">Web pro fiktivní AI startup. Živá 3D scéna, do které strkáte kurzorem, stuha, která se při scrollu vine stránkou, a animované ukázky aplikace.</p>
+            <a href="ukazky/orbit/" target="_blank" rel="noopener" class="btn-secondary text-sm py-2.5 px-5 inline-block mt-5">Otevřít web →</a>
+          </div>
+        </article>
+        <article class="web-card reveal" style="animation-delay:0.1s">
+          <div class="web-shot">
+            <img src="reference/ember.jpg" alt="Náhled webu Ember Coffee Roasters — koncept pro pražírnu kávy" loading="lazy" />
+          </div>
+          <div class="p-6">
+            <div class="tag tag-rose">Koncept · motion web</div>
+            <h3 class="text-xl font-bold mt-3 mb-2">Ember Coffee Roasters</h3>
+            <p class="text-white/50 text-sm leading-relaxed">Web pro fiktivní pražírnu kávy. 3D zrna, která uhýbají kurzoru, nabídka káv jedoucí do strany a zrno, které se při scrollu „upraží“ do tmava.</p>
+            <a href="ukazky/ember/" target="_blank" rel="noopener" class="btn-secondary text-sm py-2.5 px-5 inline-block mt-5">Otevřít web →</a>
+          </div>
+        </article>
+        <article class="web-card reveal" style="animation-delay:0.2s">
+          <div class="web-shot">
+            <img src="reference/mojeforma.jpg" alt="Náhled webu Moje forma" loading="lazy" />
+          </div>
+          <div class="p-6">
+            <div class="tag tag-emerald">Web pro program na míru</div>
+            <h3 class="text-xl font-bold mt-3 mb-2">Moje forma</h3>
+            <p class="text-white/50 text-sm leading-relaxed">Web pro program „6 kroků k výsledkům“ — klidný design, příběhy klientek, výsledky a formulář, který přivádí nové zájemce.</p>
+            <!-- ODKAZ NA ŽIVÝ WEB: až budeš mít adresu, smaž tuhle poznámku a odkomentuj řádek pod ní
+            <a href="https://ZDE-ADRESA" target="_blank" rel="noopener" class="btn-secondary text-sm py-2.5 px-5 inline-block mt-5">Otevřít web →</a>
+            -->
+          </div>
+        </article>
+        <article class="web-card reveal" style="animation-delay:0.3s">
+          <div class="web-shot">
+            <img src="reference/uwaldu.jpg" alt="Náhled webu Restaurace u Waldů" loading="lazy" />
+          </div>
+          <div class="p-6">
+            <div class="tag tag-orange">Web pro restauraci</div>
+            <h3 class="text-xl font-bold mt-3 mb-2">Restaurace u Waldů</h3>
+            <p class="text-white/50 text-sm leading-relaxed">Web restaurace v Šatově s vlastní fotografií jídel, denním menu a rezervací. Elegantní, tmavý, rychlý i na mobilu.</p>
+            <!-- ODKAZ NA ŽIVÝ WEB: až budeš mít adresu, smaž tuhle poznámku a odkomentuj řádek pod ní
+            <a href="https://ZDE-ADRESA" target="_blank" rel="noopener" class="btn-secondary text-sm py-2.5 px-5 inline-block mt-5">Otevřít web →</a>
+            -->
+          </div>
+        </article>
+
+        <article class="auto-card auto-card-cta reveal" style="animation-delay:0.1s">
+          <div class="auto-icon bg-violet-500/15 text-violet-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mt-3 mb-3">Chcete web, který se hýbe?</h3>
+          <p class="text-white/50 text-sm leading-relaxed mb-6">
+            Udělám vám web na míru i s animacemi — od jednoduché vizitky po stránku, která vede návštěvníka krok za krokem až k poptávce.
+          </p>
+          <a href="#kontakt" class="btn-primary text-sm py-3 px-6 inline-block">Chci web</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ AGENTI ══════ -->
+  <section id="agenti" class="py-24 px-6 relative">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Agentic řešení</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">AI <span class="gradient-text">agenti</span></h2>
+        <p class="text-white/40 max-w-2xl mx-auto">Agent není chatbot, na který se musíte ptát. Běží sám na pozadí, sleduje, co se děje, a ozve se, až je potřeba vaše slovo.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="auto-card reveal" style="animation-delay:0s">
+          <div class="auto-icon bg-violet-500/15 text-violet-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <div class="tag tag-violet">Pošta</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Agent na e-mailovou schránku</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Přečte všechnu došlou poštu, vytáhne jen to, co vyžaduje vaši reakci, a zbytek odloží. Ráno vidíte shrnutí místo stovky nepřečtených.</p>
+        </div>
+
+        <div class="auto-card reveal" style="animation-delay:0.1s">
+          <div class="auto-icon bg-emerald-500/15 text-emerald-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
+            </svg>
+          </div>
+          <div class="tag tag-emerald">Obchod</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Agent na odpovědi z nabídek</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Hlídá schránku, do které chodí reakce na rozeslané nabídky. Jakmile někdo odpoví, okamžitě to víte — žádná příležitost nezapadne.</p>
+        </div>
+
+        <div class="auto-card reveal" style="animation-delay:0.2s">
+          <div class="auto-icon bg-blue-500/15 text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+            </svg>
+          </div>
+          <div class="tag tag-blue">Telefon</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Agent na hovory a zmeškané volání</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Zapíše, kdo volal a o co šlo, a připraví návrh odpovědi. Hodí se, když nemůžete brát telefon během práce u zakázky.</p>
+        </div>
+
+        <div class="auto-card reveal" style="animation-delay:0.3s">
+          <div class="auto-icon bg-orange-500/15 text-orange-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+            </svg>
+          </div>
+          <div class="tag tag-orange">Dokumenty</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Agent na faktury a podklady</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Z příloh vytáhne částky, termíny a jména, uloží je, kam potřebujete, a upozorní na to, co se blíží ke splatnosti.</p>
+        </div>
+
+        <div class="auto-card reveal" style="animation-delay:0.4s">
+          <div class="auto-icon bg-rose-500/15 text-rose-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+            </svg>
+          </div>
+          <div class="tag tag-rose">Hlídání</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Agent na sledování změn</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Sleduje weby, ceny nebo inzeráty konkurence a dá vědět ve chvíli, kdy se něco změní. Nemusíte nic kontrolovat ručně.</p>
+        </div>
+
+        <div class="auto-card auto-card-cta reveal" style="animation-delay:0.5s">
+          <div class="auto-icon bg-violet-500/15 text-violet-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mt-3 mb-3">Potřebujete vlastního agenta?</h3>
+          <p class="text-white/50 text-sm leading-relaxed mb-6">
+            Řekněte mi, co vás v práci nejvíc zdržuje. Společně vymyslíme agenta přesně na to — a já ho postavím a spustím.
+          </p>
+          <a href="#kontakt" class="btn-primary text-sm py-3 px-6 inline-block">Probrat nápad</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ AUTOMATIZACE ═ -->
+  <section id="automatizace" class="py-24 px-6 relative bg-dark2">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Ukázky projektů</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Konkrétní <span class="gradient-text">automatizace</span></h2>
+        <p class="text-white/40 max-w-xl mx-auto">Reálné systémy, které jsem implementoval pro klienty. Každá automatizace šetří hodiny manuální práce.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <!-- Scraping -->
+        <div class="auto-card reveal" style="animation-delay:0s">
+          <div class="auto-icon bg-emerald-500/15 text-emerald-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+            </svg>
+          </div>
+          <div class="tag tag-emerald">Web Scraping</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Tvorba databází kontaktů</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Automaticky sbíráme kontaktní data z webu a tvoříme čisté databáze pro emailing, CRM nebo jakékoliv jiné využití. Ušetříte hodiny ručního hledání.
+          </p>
+        </div>
+
+        <!-- Emailing -->
+        <div class="auto-card reveal" style="animation-delay:0.1s">
+          <div class="auto-icon bg-violet-500/15 text-violet-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <div class="tag tag-violet">Personalizovaný emailing</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Až 50 000 mailů denně</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Personalizované oslovení každé firmy nebo jednotlivce. Na výběr zahřátý business mail nebo masový sending — ideální pro email marketing a newslettery.
+          </p>
+        </div>
+
+        <!-- Zpracování dat -->
+        <div class="auto-card reveal" style="animation-delay:0.2s">
+          <div class="auto-icon bg-blue-500/15 text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+            </svg>
+          </div>
+          <div class="tag tag-blue">Zpracování dat</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Text, foto, soubor → kamkoliv</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Převedeme jakýkoliv text, foto nebo soubor do správného formátu a automaticky ho vepíšeme do Google Sheets, CRM, emailu nebo vytvoříme shrnutí — vše napojeno na WhatsApp notifikace.
+          </p>
+        </div>
+
+        <!-- Ceny konkurence -->
+        <div class="auto-card reveal" style="animation-delay:0.3s">
+          <div class="auto-icon bg-orange-500/15 text-orange-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+          </div>
+          <div class="tag tag-orange">Monitoring</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Sledování cen konkurence</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Automatické sledování cen a dostupných informací o konkurenci na internetu. Pravidelné shrnutí a notifikace přímo majiteli — vždy víte, co dělá konkurence.
+          </p>
+        </div>
+
+        <!-- Neveřejné ceny -->
+        <div class="auto-card reveal" style="animation-delay:0.4s">
+          <div class="auto-icon bg-rose-500/15 text-rose-400">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <div class="tag tag-rose">Neveřejné ceny</div>
+          <h3 class="text-lg font-bold mt-3 mb-2">Zjistíme ceny konkurence</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Jedním mailem zjistíme neveřejné ceny vaší konkurence. Mějte přehled o cenové politice trhu a rozhodujte se vždy o krok napřed.
+          </p>
+        </div>
+
+        <!-- CTA card -->
+        <div class="auto-card-cta reveal" style="animation-delay:0.5s">
+          <div class="text-4xl mb-4">🚀</div>
+          <h3 class="text-xl font-bold mb-3">Máte jiný nápad?</h3>
+          <p class="text-white/50 text-sm leading-relaxed mb-6">
+            Popište mi váš problém a společně vymyslíme automatizaci přesně na míru vašemu byznysu.
+          </p>
+          <a href="#kontakt" class="btn-primary text-sm py-3 px-6 inline-block">Konzultace zdarma</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ ŠKOLENÍ ═════ -->
+  <section id="skoleni" class="py-24 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <!-- Header -->
+      <div class="text-center mb-12 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Školení v praxi</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">AI školení <span class="gradient-text">na míru</span></h2>
+        <p class="text-white/40 max-w-2xl mx-auto mb-8">Školím lidi z úplně různých oborů — účetní, řemeslníky, fotografy, personalisty i majitele restaurací. Vždy na jejich vlastní práci, ne na obecných příkladech.</p>
+
+        <div class="flex flex-wrap justify-center gap-2 mb-6">
+          <span class="obor-chip">Gastro a kavárny</span>
+          <span class="obor-chip">Účetnictví</span>
+          <span class="obor-chip">Reality</span>
+          <span class="obor-chip">Grafika a design</span>
+          <span class="obor-chip">Fotografie</span>
+          <span class="obor-chip">HR a nábor</span>
+          <span class="obor-chip">Řemeslo a OSVČ</span>
+          <span class="obor-chip">E-shop</span>
+          <span class="obor-chip">Marketing</span>
+          <span class="obor-chip">Výroba</span>
+        </div>
+        <!-- Overall rating -->
+        <div class="inline-flex items-center gap-3 mt-4 px-6 py-3 rounded-full bg-white/5 border border-white/10">
+          <div class="flex gap-1">
+            <span class="text-yellow-400 text-xl">★</span>
+            <span class="text-yellow-400 text-xl">★</span>
+            <span class="text-yellow-400 text-xl">★</span>
+            <span class="text-yellow-400 text-xl">★</span>
+            <span class="text-yellow-400 text-xl">★</span>
+          </div>
+          <span class="text-white font-bold text-lg">4,9</span>
+          <span class="text-white/40 text-sm">/ 5 — z 12 recenzí</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 text-center mb-6">
+      <p class="text-white/30 text-xs tracking-wide">Recenze klientů — ze školení i z automatizačních zakázek</p>
+    </div>
+
+    <!-- Carousel wrapper -->
+    <div class="carousel-wrapper">
+      <div class="carousel-track">
+
+        <!-- ── Recenze 1 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Před školením jsem o AI nevěděla skoro nic. Marek mi během pár hodin ukázal, jak pracovat s nástroji, které mi teď šetří čas každý den — hlavně s organizací objednávek a komunikací se zákazníky. Konečně se v tom vyznám."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #3b82f6)">MS</div>
+            <div>
+              <div class="review-name">Markéta Svobodová</div>
+              <div class="review-role">Majitelka kavárny</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 2 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Jako realitní makléř řeším denně spoustu e-mailů a dokumentů. Marek mi ukázal, jak na to jít chytře. Teď používám AI na přípravu nabídek a odpovědí klientům a ušetřím tak aspoň hodinu a půl denně."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #059669, #3b82f6)">JN</div>
+            <div>
+              <div class="review-name">Jakub Novotný</div>
+              <div class="review-role">Realitní makléř</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 3 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Čekala jsem, že to bude složité a pro IT lidi. Ale Marek vše vysvětlil jednoduše a ukázal mi konkrétní aplikace přímo pro účetnictví. Teď zvládám věci, které mi dřív zabraly celé odpoledne, za pár kliknutí."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #dc2626, #f59e0b)">LP</div>
+            <div>
+              <div class="review-name">Lucie Procházková</div>
+              <div class="review-role">Účetní, OSVČ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 4 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Jako grafik jsem si myslel, že AI moji práci ohrozí. Po školení s Markem jsem pochopil, jak ji naopak využít ve svůj prospěch. Doporučil mi nástroje, které teď denně používám a klientům dokážu dodat víc za kratší dobu."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899)">MD</div>
+            <div>
+              <div class="review-name">Martin Dvořák</div>
+              <div class="review-role">Grafický designér</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 5 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Marek mi ukázal, jak AI využít při třídění životopisů a první komunikaci s kandidáty. Nábor, který mi dřív zabral celý týden, teď zvládnu za dva dny. A ještě si ho dobře užiji, protože ta otravná část je automatická."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #0891b2, #7c3aed)">PH</div>
+            <div>
+              <div class="review-name">Petra Horáková</div>
+              <div class="review-role">HR manažerka</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 6 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Řemeslo mám rád, papíry ne. Marek mi ukázal, jak si poradit s nabídkami, fakturami a odpovídáním na dotazy zákazníků pomocí AI. Nevěřil jsem, že to zvládnu, ale bylo to mnohem jednodušší, než jsem čekal."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #d97706, #dc2626)">OČ</div>
+            <div>
+              <div class="review-name">Ondřej Černý</div>
+              <div class="review-role">Instalatér, OSVČ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 7 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Fotím ráda, ale editace a organizace fotek mi brala hrozně moc času. Díky školení s Markem jsem objevila nástroje, o kterých jsem neměla ponětí. Workflow mám teď zautomatizovaný a klientům dodávám fotky rychleji."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #059669, #7c3aed)">BK</div>
+            <div>
+              <div class="review-name">Barbora Krejčí</div>
+              <div class="review-role">Fotografka</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 8 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Chtěl jsem kontakty na firmy v mém oboru, ale ručně to sbírat je nesmysl. Marek mi nastavil scraping, který mi za pár hodin sestavil čistou databázi přesně podle mých kritérií. Ušetřilo mi to týdny práce."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4)">TB</div>
+            <div>
+              <div class="review-name">Tomáš Blažek</div>
+              <div class="review-role">Majitel e-shopu</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 9 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Rozesílali jsme newslettery plošně a výsledky tomu odpovídaly. Marek nám nastavil personalizovaný emailing — každá firma dostane zprávu, která odpovídá jejímu oboru. Otevíratelnost mailů se skoro zdvojnásobila."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #ec4899, #7c3aed)">JV</div>
+            <div>
+              <div class="review-name">Jana Veselá</div>
+              <div class="review-role">Marketingová manažerka</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 10 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Sledovat ceny konkurence ručně je nereálné. Marek nám nastavil monitoring, který každý den projede weby konkurentů a pošle mi přehled. Díky tomu reagujeme rychleji a nepřicházíme o zakázky kvůli ceně."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #0891b2, #059669)">PK</div>
+            <div>
+              <div class="review-name">Pavel Kučera</div>
+              <div class="review-role">CEO, výrobní firma</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 11 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Data z různých zdrojů jsem dřív přepisovala ručně do tabulek — každý den. Marek mi nastavil automatizaci, která vše sama zpracuje, vepíše do Google Sheets a pošle mi notifikaci na WhatsApp. Konečně mám čas na důležitější věci."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444)">SM</div>
+            <div>
+              <div class="review-name">Simona Marková</div>
+              <div class="review-role">OSVČ, online podnikání</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recenze 12 ── -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Marek mi zautomatizoval pár každodenních věcí v restauraci — potvrzování rezervací, přeposílání objednávek a ranní přehled tržeb. Zní to jako maličkost, ale šetří mi to přes hodinu denně. Za rok to jsou stovky hodin."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #d97706)">RK</div>
+            <div>
+              <div class="review-name">Radek Kopecký</div>
+              <div class="review-role">Majitel restaurace</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate set for seamless loop -->
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Před školením jsem o AI nevěděla skoro nic. Marek mi během pár hodin ukázal, jak pracovat s nástroji, které mi teď šetří čas každý den — hlavně s organizací objednávek a komunikací se zákazníky. Konečně se v tom vyznám."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #3b82f6)">MS</div>
+            <div>
+              <div class="review-name">Markéta Svobodová</div>
+              <div class="review-role">Majitelka kavárny</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Jako realitní makléř řeším denně spoustu e-mailů a dokumentů. Marek mi ukázal, jak na to jít chytře. Teď používám AI na přípravu nabídek a odpovědí klientům a ušetřím tak aspoň hodinu a půl denně."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #059669, #3b82f6)">JN</div>
+            <div>
+              <div class="review-name">Jakub Novotný</div>
+              <div class="review-role">Realitní makléř</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Čekala jsem, že to bude složité a pro IT lidi. Ale Marek vše vysvětlil jednoduše a ukázal mi konkrétní aplikace přímo pro účetnictví. Teď zvládám věci, které mi dřív zabraly celé odpoledne, za pár kliknutí."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #dc2626, #f59e0b)">LP</div>
+            <div>
+              <div class="review-name">Lucie Procházková</div>
+              <div class="review-role">Účetní, OSVČ</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Jako grafik jsem si myslel, že AI moji práci ohrozí. Po školení s Markem jsem pochopil, jak ji naopak využít ve svůj prospěch. Doporučil mi nástroje, které teď denně používám a klientům dokážu dodat víc za kratší dobu."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899)">MD</div>
+            <div>
+              <div class="review-name">Martin Dvořák</div>
+              <div class="review-role">Grafický designér</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Marek mi nastavil monitoring cen, který každý den projede weby konkurentů a pošle mi přehled. Díky tomu reagujeme rychleji a nepřicházíme o zakázky kvůli ceně."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #0891b2, #059669)">PK</div>
+            <div>
+              <div class="review-name">Pavel Kučera</div>
+              <div class="review-role">CEO, výrobní firma</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card" aria-hidden="true">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Marek mi zautomatizoval pár každodenních věcí v restauraci — potvrzování rezervací, přeposílání objednávek a ranní přehled tržeb. Šetří mi to přes hodinu denně. Za rok to jsou stovky hodin."</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background: linear-gradient(135deg, #7c3aed, #d97706)">RK</div>
+            <div>
+              <div class="review-name">Radek Kopecký</div>
+              <div class="review-role">Majitel restaurace</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  
+    <div class="max-w-7xl mx-auto px-6 text-center mt-12 reveal">
+      <a href="#kontakt" class="btn-primary px-8 py-4 text-base inline-block">Chci školení pro sebe nebo tým</a>
+      <p class="text-white/30 text-xs mt-4">Individuálně i pro firemní týmy · online nebo u vás</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ O MNĚ ═══════ -->
+  <section id="o-mne" class="py-24 px-6 relative overflow-hidden">
+    <!-- Blob -->
+    <div class="blob blob-purple" style="top:auto;bottom:-100px;right:-100px;left:auto;opacity:0.15"></div>
+
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+
+        <!-- Left: Photo / visual -->
+        <div class="reveal order-2 md:order-1">
+          <div class="relative">
+            <!-- Photo -->
+            <div class="about-photo-wrapper">
+              <img src="foto.jpg" alt="Marek Ševela" class="about-photo-img" />
+            </div>
+            <!-- Floating badges -->
+            <div class="floating-badge top-4 -right-4 md:-right-8">
+              <span class="text-green-400 font-bold">✓</span> Ověřený expert
+            </div>
+            <div class="floating-badge bottom-8 -left-4 md:-left-8" style="animation-delay:1s">
+              <span class="text-violet-400 font-bold">AI</span> Specialista
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Text -->
+        <div class="reveal order-1 md:order-2">
+          <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">O mně</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">
+            Jsem Marek,<br/><span class="gradient-text">váš AI partner.</span>
+          </h2>
+          <p class="text-white/50 leading-relaxed mb-5">
+            Specializuji se na implementaci AI nástrojů a automatizací, které firmám a podnikatelům ušetří hodiny rutinní práce každý týden. Věřím, že technologie mají pracovat za vás — ne naopak.
+          </p>
+          <p class="text-white/50 leading-relaxed mb-8">
+            Pomáhám klientům nastavit systémy pro sběr dat, personalizovanou komunikaci, zpracování dokumentů a monitoring trhu — vše propojené, automatické a bez nutnosti technických znalostí na vaší straně.
+          </p>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="text-center p-4 rounded-2xl bg-dark2 border border-white/5">
+              <div class="text-3xl font-black gradient-text">50+</div>
+              <div class="text-xs text-white/40 mt-1">Projektů</div>
+            </div>
+            <div class="text-center p-4 rounded-2xl bg-dark2 border border-white/5">
+              <div class="text-3xl font-black gradient-text">∞</div>
+              <div class="text-xs text-white/40 mt-1">Ušetřených hodin</div>
+            </div>
+            <div class="text-center p-4 rounded-2xl bg-dark2 border border-white/5">
+              <div class="text-3xl font-black gradient-text">100%</div>
+              <div class="text-xs text-white/40 mt-1">Na míru</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ KONTAKT ═════ -->
+  <section id="kontakt" class="py-24 px-6 bg-dark2 relative overflow-hidden">
+    <div class="blob blob-blue" style="opacity:0.1;top:auto;bottom:-50px"></div>
+
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-violet-400 text-sm font-medium tracking-widest uppercase mb-3">Začněme spolupracovat</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Napište mi</h2>
+        <p class="text-white/40 max-w-xl mx-auto">Konzultace je zdarma. Popište mi váš problém a já vám navrhnu řešení.</p>
+      </div>
+
+      <div class="grid md:grid-cols-5 gap-10 items-start">
+
+        <!-- Contact info -->
+        <div class="md:col-span-2 space-y-6 reveal">
+
+          <div class="contact-info-card">
+            <div class="contact-icon bg-violet-500/15 text-violet-400">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-white/40 mb-1">Telefon</p>
+              <a href="tel:+420773338113" class="text-white font-medium hover:text-violet-400 transition-colors">+420 773 338 113</a>
+            </div>
+          </div>
+
+          <div class="contact-info-card">
+            <div class="contact-icon bg-blue-500/15 text-blue-400">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-white/40 mb-1">Email</p>
+              <a href="mailto:sales@mareksevela.com" class="text-white font-medium hover:text-blue-400 transition-colors">sales@mareksevela.com</a>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-violet-500/20 bg-violet-500/5">
+            <p class="text-violet-300 font-medium mb-2">Konzultace zdarma</p>
+            <p class="text-white/40 text-sm">Zavolejte nebo napište a domluvíme se na bezplatné konzultaci vašeho projektu.</p>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="md:col-span-3 reveal" style="animation-delay:0.1s">
+          <form id="contactForm" name="poptavka" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="space-y-5">
+
+            <!-- technické: díky tomuhle se poptávky ukládají do seznamu na Netlify -->
+            <input type="hidden" name="form-name" value="poptavka" />
+            <p class="hidden"><label>Toto pole nevyplňujte: <input name="bot-field" /></label></p>
+
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="form-label">Jméno *</label>
+                <input type="text" name="jmeno" required placeholder="Jan Novák" class="form-input" />
+              </div>
+              <div>
+                <label class="form-label">Email *</label>
+                <input type="email" name="email" required placeholder="jan@firma.cz" class="form-input" />
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Telefon</label>
+              <input type="tel" name="telefon" placeholder="+420 123 456 789" class="form-input" />
+            </div>
+
+            <div>
+              <label class="form-label">O čem chcete mluvit? *</label>
+              <select name="tema" required class="form-input">
+                <option value="" disabled selected>Vyberte téma</option>
+                <option>AI školení na míru</option>
+                <option>Automatizace na míru</option>
+                <option>Web scraping & databáze</option>
+                <option>Personalizovaný emailing</option>
+                <option>Sledování cen konkurence</option>
+                <option>Jiné</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Zpráva *</label>
+              <textarea name="zprava" required rows="5" placeholder="Popište váš projekt nebo problém..." class="form-input resize-none"></textarea>
+            </div>
+
+            <div class="consent-row">
+              <input type="checkbox" id="souhlas" name="souhlas" value="ano" required class="consent-box" />
+              <label for="souhlas" class="consent-text">
+                Souhlasím se zpracováním osobních údajů (jméno, e-mail, telefon) za účelem odpovědi
+                na tuto poptávku a zaslání souvisejících nabídek. Údaje nepředávám nikomu dalšímu
+                a souhlas můžete kdykoliv odvolat e-mailem na
+                <a href="mailto:sales@mareksevela.com">sales@mareksevela.com</a>. *
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-4 text-base" id="submitBtn">
+              <span id="submitText">Odeslat zprávu →</span>
+              <span id="submitLoading" class="hidden">Odesílám...</span>
+            </button>
+
+            <p class="text-xs text-white/30 text-center">Odpovím do 24 hodin. Bez spamu, bez závazků.</p>
+
+            <!-- Success / Error messages -->
+            <div id="formSuccess" class="hidden p-4 rounded-xl bg-green-500/15 border border-green-500/30 text-green-400 text-sm text-center">
+              Zpráva odeslána! Ozvu se vám co nejdříve. 🎉
+            </div>
+            <div id="formError" class="hidden p-4 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-sm text-center">
+              Něco se pokazilo. Zkuste to prosím znovu nebo mi napište přímo na email.
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ FOOTER ══════ -->
+  <footer class="py-10 px-6 border-t border-white/5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-white font-bold text-xs">MŠ</div>
+        <span class="text-white/40 text-sm">Marek Ševela — AI nástroje, které pracují za vás.</span>
+      </div>
+      <div class="flex gap-6">
+        <a href="#sluzby"       class="text-white/30 hover:text-white/60 text-sm transition-colors">Služby</a>
+        <a href="#automatizace" class="text-white/30 hover:text-white/60 text-sm transition-colors">Automatizace</a>
+        <a href="#kontakt"      class="text-white/30 hover:text-white/60 text-sm transition-colors">Kontakt</a>
+      </div>
+      <p class="text-white/20 text-xs">© 2025 Marek Ševela. Všechna práva vyhrazena.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script type="module" src="motion.js"></script>
+</body>
+</html>

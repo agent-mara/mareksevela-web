@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" class="is-loading">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember Coffee Roasters — Specialty coffee from Brno</title>
+<meta name="description" content="Ember is a fictional specialty coffee roastery and café in Brno. A motion website concept by Marek Ševela.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#120C09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 170'%3E%3Cellipse cx='60' cy='85' rx='54' ry='80' fill='%23FF5A1F'/%3E%3Cpath d='M60 12C36 48 84 70 60 108S54 150 60 160' fill='none' stroke='%23120C09' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]reduced\b/.test(location.search)) document.documentElement.classList.add('reduced');
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="bean" viewBox="0 0 120 170">
+    <ellipse cx="60" cy="85" rx="54" ry="80" fill="currentColor"/>
+    <path d="M60 12 C 36 48, 84 70, 60 108 S 54 150, 60 160" fill="none" style="stroke:var(--crease,#120C09)" stroke-width="7" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="arrow" viewBox="0 0 24 24">
+    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<!-- Curtain: intro reveal + page-leave transition -->
+<div class="curtain" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="loader" aria-hidden="true">
+  <div class="loader__inner">
+    <svg class="loader__bean" viewBox="0 0 120 170"><use href="#bean"/></svg>
+    <div class="loader__num"><span>0</span><small>%</small></div>
+    <p class="loader__label">Preheating the roaster…</p>
+    <div class="loader__bar"><i></i></div>
+  </div>
+</div>
+
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+
+<header class="header" data-theme="dark">
+  <a href="#top" class="logo" aria-label="Ember — back to top">
+    <svg viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+    <span>Ember</span>
+  </a>
+  <p class="header__tag">Specialty coffee roasters<br>Brno, Czech Republic</p>
+  <nav class="nav" aria-label="Main">
+    <a href="#coffee"><span class="roll" data-roll>Coffee</span></a>
+    <a href="#roasting"><span class="roll" data-roll>Roasting</span></a>
+    <a href="#cafe"><span class="roll" data-roll>Café</span></a>
+    <a href="#contact"><span class="roll" data-roll>Contact</span></a>
+  </nav>
+  <div class="header__right">
+    <a href="#coffee" class="pill pill--ghost cart" aria-label="Your bag">
+      <span class="roll" data-roll>Bag</span><span class="cart__count">0</span>
+    </a>
+    <button class="pill pill--solid menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-magnetic>
+      <span class="roll" data-roll>Menu</span><span class="burger" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <div class="menu__bg"><span></span><span></span><span></span><span></span></div>
+  <div class="menu__inner">
+    <ul class="menu__links">
+      <li><a href="#coffee"><span class="menu__num">01</span><span class="mask"><span>Our coffee</span></span></a></li>
+      <li><a href="#roasting"><span class="menu__num">02</span><span class="mask"><span>How we roast</span></span></a></li>
+      <li><a href="#cafe"><span class="menu__num">03</span><span class="mask"><span>The café</span></span></a></li>
+      <li><a href="#contact"><span class="menu__num">04</span><span class="mask"><span>Say hello</span></span></a></li>
+    </ul>
+    <div class="menu__foot">
+      <p>Kávová 12, Brno</p>
+      <p>Mon–Fri 7:30–18:00</p>
+      <p>Roasting every Thursday</p>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+
+  <!-- HERO — live 3D bean pile -->
+  <section class="hero" data-theme="dark">
+    <div class="hero__card">
+      <h1 class="hero__title display" aria-label="Roasted slow, poured bold">
+        <span class="line" aria-hidden="true"><span class="split">Roasted</span></span>
+        <span class="line line--serif" aria-hidden="true"><span class="split">slow,</span></span>
+        <span class="line" aria-hidden="true"><span class="split">poured bold</span></span>
+      </h1>
+      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+      <div class="hero__ui">
+        <p class="corner corner--tl">Small-batch roastery<br>&amp; café since 2019</p>
+        <p class="corner corner--tr">49.19° N<br>16.61° E</p>
+        <p class="hero__hint"><i class="hint-dot"></i><span class="hint-fine">Move your cursor to stir the beans</span><span class="hint-touch">Tap to stir the beans</span></p>
+        <a href="#coffee" class="badge" data-magnetic aria-label="Shop the coffee">
+          <svg class="badge__ring" viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="badgeCircle" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+            <text><textPath href="#badgeCircle" textLength="462" lengthAdjust="spacing">Freshly roasted • every Thursday • </textPath></text>
+          </svg>
+          <svg class="badge__arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero__below">
+      <p class="hero__lead" data-fade>Small batches from nine origins. We roast every Thursday — by Friday morning, your coffee is already on its way.</p>
+      <a href="#coffee" class="pill pill--accent" data-magnetic data-fade><span class="roll" data-roll>Shop the coffee</span><svg aria-hidden="true"><use href="#arrow"/></svg></a>
+    </div>
+  </section>
+
+  <!-- Crossing marquee bands -->
+  <section class="bands" data-theme="dark" aria-label="Where our coffee comes from">
+    <div class="band band--b" aria-hidden="true">
+      <div class="band__track">
+        <div class="band__unit">
+          <em>specialty coffee</em><svg class="bi" viewBox="0 0 120 170"><use href="#bean"/></svg>
+          <em>roasted in Brno</em><svg class="bi" viewBox="0 0 120 170"><use href="#bean"/></svg>
+          <em>packed by hand</em><svg class="bi" viewBox="0 0 120 170"><use href="#bean"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="band band--a">
+      <div class="band__track">
+        <div class="band__unit">
+          <span>Ethiopia</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Colombia</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Kenya</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Brazil</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Guatemala</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Rwanda</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Costa Rica</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Peru</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+          <span>Indonesia</span><svg class="bi" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="statement" id="story" data-theme="light">
+    <div class="statement__inner">
+      <p class="eyebrow" data-fade>(01) Our story</p>
+      <p class="statement__text">Every bean carries the taste of the place it was grown. Our job is simple: give it <em>the right heat, time and patience.</em> No industrial roasting — just small twelve-kilo batches that taste exactly the way they should.</p>
+      <div class="stats">
+        <div class="stat" data-fade><span class="stat__num" data-count="9">9</span><span class="stat__label">origins we source<br>our beans from</span></div>
+        <div class="stat" data-fade><span class="stat__num" data-count="12">12</span><span class="stat__label">kilos of coffee<br>in every batch</span></div>
+        <div class="stat" data-fade><span class="stat__num" data-count="48">48</span><span class="stat__label">hours from our roaster<br>to your door</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our coffee — circular reveal + horizontal scroll -->
+  <div class="coffee-wrap">
+    <section class="coffee" id="coffee" data-theme="dark">
+      <div class="coffee__track">
+        <div class="coffee__intro">
+          <p class="eyebrow">(02) Our coffee</p>
+          <h2 class="display rl">
+            <span class="line"><span>Nine origins.</span></span>
+            <span class="line"><span><em>One</em> roastery.</span></span>
+          </h2>
+          <p class="coffee__lead">We roast five to seven coffees every week. Pick one by taste — or let us choose for you.</p>
+        </div>
+
+        <article class="card" style="--c:#F2B84B;--t:#1A110C">
+          <div class="card__top"><span>01</span><span>Ethiopia · Yirgacheffe</span></div>
+          <div class="card__visual"><div class="bag"><div class="bag__label"><span class="bag__brand">Ember</span><span class="bag__name">Jasmine</span><span class="bag__weight">250 g</span></div></div></div>
+          <div class="card__info">
+            <h3 class="card__name">Jasmine</h3>
+            <p class="card__notes">bergamot, white peach, jasmine</p>
+            <div class="roast" style="--v:.22"><span>Roast</span><span class="roast__bar"><i></i></span><span>light</span></div>
+            <div class="card__buy"><span class="price">349 CZK <small>/ 250 g</small></span><button class="add" type="button">Add to bag</button></div>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#B8344F;--t:#F6F0E6">
+          <div class="card__top"><span>02</span><span>Kenya · Nyeri</span></div>
+          <div class="card__visual"><div class="bag"><div class="bag__label"><span class="bag__brand">Ember</span><span class="bag__name">Blackcurrant</span><span class="bag__weight">250 g</span></div></div></div>
+          <div class="card__info">
+            <h3 class="card__name">Blackcurrant</h3>
+            <p class="card__notes">blackcurrant, grapefruit, cane sugar</p>
+            <div class="roast" style="--v:.3"><span>Roast</span><span class="roast__bar"><i></i></span><span>light</span></div>
+            <div class="card__buy"><span class="price">379 CZK <small>/ 250 g</small></span><button class="add" type="button">Add to bag</button></div>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#E07A45;--t:#1A110C">
+          <div class="card__top"><span>03</span><span>Colombia · Huila</span></div>
+          <div class="card__visual"><div class="bag"><div class="bag__label"><span class="bag__brand">Ember</span><span class="bag__name">Caramel</span><span class="bag__weight">250 g</span></div></div></div>
+          <div class="card__info">
+            <h3 class="card__name">Caramel</h3>
+            <p class="card__notes">milk chocolate, caramel, red apple</p>
+            <div class="roast" style="--v:.5"><span>Roast</span><span class="roast__bar"><i></i></span><span>medium</span></div>
+            <div class="card__buy"><span class="price">319 CZK <small>/ 250 g</small></span><button class="add" type="button">Add to bag</button></div>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#3F6B4E;--t:#F6F0E6">
+          <div class="card__top"><span>04</span><span>Guatemala · Antigua</span></div>
+          <div class="card__visual"><div class="bag"><div class="bag__label"><span class="bag__brand">Ember</span><span class="bag__name">Cocoa</span><span class="bag__weight">250 g</span></div></div></div>
+          <div class="card__info">
+            <h3 class="card__name">Cocoa</h3>
+            <p class="card__notes">dark chocolate, plum, cinnamon</p>
+            <div class="roast" style="--v:.62"><span>Roast</span><span class="roast__bar"><i></i></span><span>medium</span></div>
+            <div class="card__buy"><span class="price">329 CZK <small>/ 250 g</small></span><button class="add" type="button">Add to bag</button></div>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#8A5A3C;--t:#F6F0E6">
+          <div class="card__top"><span>05</span><span>Brazil · Cerrado</span></div>
+          <div class="card__visual"><div class="bag"><div class="bag__label"><span class="bag__brand">Ember</span><span class="bag__name">Hazelnut</span><span class="bag__weight">250 g</span></div></div></div>
+          <div class="card__info">
+            <h3 class="card__name">Hazelnut</h3>
+            <p class="card__notes">hazelnut, cocoa nibs, molasses</p>
+            <div class="roast" style="--v:.8"><span>Roast</span><span class="roast__bar"><i></i></span><span>medium-dark</span></div>
+            <div class="card__buy"><span class="price">289 CZK <small>/ 250 g</small></span><button class="add" type="button">Add to bag</button></div>
+          </div>
+        </article>
+
+        <article class="card card--sub">
+          <div class="card__top"><span>06</span><span>Subscription</span></div>
+          <div class="card__visual"><svg class="sub__bean" viewBox="0 0 120 170" aria-hidden="true"><use href="#bean"/></svg></div>
+          <div class="card__info">
+            <h3 class="card__name">Every <em>month</em></h3>
+            <p class="card__notes">Freshly roasted coffee at your door. Pause or cancel with one click.</p>
+            <div class="card__buy"><span class="price">from 299 CZK <small>/ month</small></span><button class="add" type="button">Subscribe</button></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="coffee__progress" aria-hidden="true">
+        <span>Keep scrolling</span>
+        <div class="coffee__bar"><i></i></div>
+        <svg><use href="#arrow"/></svg>
+      </div>
+    </section>
+  </div>
+
+  <!-- How we roast — the page itself roasts as you scroll -->
+  <section class="roasting" id="roasting" data-theme="light">
+    <div class="roasting__inner">
+      <div class="roasting__head">
+        <p class="eyebrow">(03) How we roast</p>
+        <div class="readout">
+          <div><span class="eyebrow">Temperature</span><b><span class="js-temp">24</span> °C</b></div>
+          <div><span class="eyebrow">Roast time</span><b class="js-time">00:00</b></div>
+        </div>
+      </div>
+
+      <div class="roasting__stage" aria-hidden="true">
+        <div class="roasting__giant"><span class="js-temp">24</span>°</div>
+        <div class="roasting__bean">
+          <svg class="roasting__svg" viewBox="0 0 120 170"><use href="#bean"/></svg>
+          <canvas class="roasting__canvas"></canvas>
+          <div class="chaff"></div>
+        </div>
+      </div>
+
+      <div class="roasting__steps">
+        <article class="step">
+          <span class="step__no">01 / 04</span>
+          <h3 class="display">Green beans</h3>
+          <p>Our beans arrive in jute sacks straight from the farms. They're hard, green and smell more of fresh hay than of coffee.</p>
+        </article>
+        <article class="step">
+          <span class="step__no">02 / 04</span>
+          <h3 class="display">Drying</h3>
+          <p>For the first five minutes the beans lose their moisture and turn yellow. The whole roastery smells of freshly baked bread.</p>
+        </article>
+        <article class="step">
+          <span class="step__no">03 / 04</span>
+          <h3 class="display">First crack</h3>
+          <p>At around 196 °C the beans audibly crack and swell by almost half. From here on, every second counts.</p>
+        </article>
+        <article class="step">
+          <span class="step__no">04 / 04</span>
+          <h3 class="display">Develop &amp; rest</h3>
+          <p>We let the sugars caramelise a little longer, then cool the beans fast. They rest for two days before they ship.</p>
+        </article>
+      </div>
+
+      <div class="roasting__bar" aria-hidden="true">
+        <div class="roasting__track"><i></i></div>
+        <ol class="roasting__labels"><li>Green</li><li>Drying</li><li>First crack</li><li>Done</li></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Café -->
+  <section class="cafe" id="cafe" data-theme="light">
+    <div class="cafe__head">
+      <p class="eyebrow" data-fade>(04) The café</p>
+      <h2 class="display rl">
+        <span class="line"><span>Stop by</span></span>
+        <span class="line"><span><em>for an</em> espresso</span></span>
+      </h2>
+    </div>
+
+    <div class="cafe__grid">
+      <div class="cafe__info">
+        <div data-fade><h4 class="eyebrow">Find us</h4><p>Kávová 12<br>602 00 Brno</p></div>
+        <div data-fade><h4 class="eyebrow">Open</h4><p>Mon–Fri 7:30–18:00<br>Sat–Sun 9:00–17:00</p></div>
+        <div data-fade><h4 class="eyebrow">Cupping</h4><p>Every first Wednesday of the month we taste new arrivals together. Free entry.</p></div>
+      </div>
+
+      <ul class="drinks">
+        <li class="drink" data-color="#FF5A1F" data-name="Espresso"><span class="drink__name">Espresso</span><span class="drink__desc">a double shot of our Ember blend</span><span class="drink__price">55 CZK</span></li>
+        <li class="drink" data-color="#C89B6D" data-name="Flat white"><span class="drink__name">Flat white</span><span class="drink__desc">espresso &amp; velvety milk</span><span class="drink__price">85 CZK</span></li>
+        <li class="drink" data-color="#3F6B4E" data-name="V60 filter"><span class="drink__name">V60 filter</span><span class="drink__desc">coffee of the week, poured by hand</span><span class="drink__price">89 CZK</span></li>
+        <li class="drink" data-color="#2E4A6B" data-name="Cold brew"><span class="drink__name">Cold brew</span><span class="drink__desc">steeped cold for 18 hours</span><span class="drink__price">85 CZK</span></li>
+        <li class="drink" data-color="#B8344F" data-name="Cappuccino"><span class="drink__name">Cappuccino</span><span class="drink__desc">the classic, with thick foam</span><span class="drink__price">79 CZK</span></li>
+      </ul>
+    </div>
+
+    <div class="drink-preview" aria-hidden="true">
+      <svg viewBox="0 0 120 120" fill="none" stroke="#F6F0E6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <path class="steam" d="M46 40c-7-7 7-13 0-21"/>
+        <path class="steam" d="M60 40c-7-7 7-13 0-21"/>
+        <path class="steam" d="M74 40c-7-7 7-13 0-21"/>
+        <path d="M28 50h64v16a28 28 0 0 1-28 28h-8a28 28 0 0 1-28-28z" fill="#F6F0E6" stroke="none"/>
+        <path d="M92 56h5a10 10 0 0 1 0 20h-7"/>
+        <path d="M22 104h76"/>
+      </svg>
+      <span class="drink-preview__label"></span>
+    </div>
+  </section>
+
+  <!-- Contact / footer -->
+  <footer class="footer" id="contact" data-theme="dark">
+    <div class="footer__cta">
+      <p class="eyebrow" data-fade>(05) Say hello</p>
+      <h2 class="display rl">
+        <span class="line"><span>Fancy a cup</span></span>
+        <span class="line"><span><em>with</em> us?</span></span>
+      </h2>
+      <a href="#coffee" class="btn-big" data-magnetic data-fade>
+        <span class="roll" data-roll>Order your first bag</span>
+        <svg aria-hidden="true"><use href="#arrow"/></svg>
+      </a>
+    </div>
+
+    <div class="footer__cols">
+      <div data-fade><h4 class="eyebrow">Roastery &amp; café</h4><p>Kávová 12<br>602 00 Brno</p></div>
+      <div data-fade><h4 class="eyebrow">Open</h4><p>Mon–Fri 7:30–18:00<br>Sat–Sun 9:00–17:00</p></div>
+      <div data-fade><h4 class="eyebrow">Follow</h4><p>Instagram<br>Facebook</p></div>
+    </div>
+
+    <div class="footer__giant" aria-hidden="true">Ember</div>
+
+    <div class="footer__bottom">
+      <p>© 2026 Ember is a fictional brand created as a portfolio piece.</p>
+      <a href="https://mareksevela.com/#weby" data-leave>Concept, design &amp; development — <u>Marek Ševela</u> ↗</a>
+    </div>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

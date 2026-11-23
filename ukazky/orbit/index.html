@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" class="is-loading">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit — The AI teammate for small teams</title>
+<meta name="description" content="Orbit is a fictional AI product created as a motion & WebGL portfolio piece by Marek Ševela.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0D0E10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230D0E10'/%3E%3Ccircle cx='15' cy='17' r='8' fill='none' stroke='%23D2FF3A' stroke-width='3'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23D2FF3A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script>
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]reduced\b/.test(location.search)) document.documentElement.classList.add('reduced');
+</script>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="logo" viewBox="0 0 32 32"><circle cx="15" cy="17" r="10" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24.5" cy="8" r="3.6" fill="currentColor"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="arrow-dr" viewBox="0 0 24 24"><path d="M7 7l10 10M17 8v9H8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- Loader -->
+<div class="loader" aria-hidden="true">
+  <div class="loader__inner">
+    <svg class="loader__ring" viewBox="0 0 120 120">
+      <circle class="loader__track" cx="60" cy="60" r="54"/>
+      <circle class="loader__prog" cx="60" cy="60" r="54"/>
+    </svg>
+    <div class="loader__num">000</div>
+    <p class="loader__label">Initializing orbit</p>
+  </div>
+</div>
+<div class="leave" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+
+<!-- Header -->
+<header class="header" data-theme="light">
+  <a href="#top" class="logo" aria-label="Orbit — back to top">
+    <svg aria-hidden="true"><use href="#logo"/></svg><span>orbit</span>
+  </a>
+  <p class="header__tag">The AI teammate that remembers everything, so your team doesn’t have to.</p>
+  <div class="header__right">
+    <a href="#features" class="pill pill--ghost hide-sm"><span class="roll" data-roll>Product</span></a>
+    <a href="#pricing" class="pill pill--ghost hide-sm"><span class="roll" data-roll>Pricing</span></a>
+    <a href="#cta" class="pill pill--dark" data-magnetic><span class="roll" data-roll>Get early access</span><span class="dot"></span></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu" data-magnetic><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- Menu -->
+<div class="menu" id="menu" aria-hidden="true">
+  <ul class="menu__links">
+    <li><a href="#top"><span class="menu__num">01</span><span class="mask"><span>Home</span></span></a></li>
+    <li><a href="#features"><span class="menu__num">02</span><span class="mask"><span>Product</span></span></a></li>
+    <li><a href="#stack"><span class="menu__num">03</span><span class="mask"><span>Integrations</span></span></a></li>
+    <li><a href="#pricing"><span class="menu__num">04</span><span class="mask"><span>Pricing</span></span></a></li>
+    <li><a href="#cta"><span class="menu__num">05</span><span class="mask"><span>Early access</span></span></a></li>
+  </ul>
+  <div class="menu__foot">
+    <p>hello@orbit.ai</p>
+    <p>Prague · Berlin · Remote</p>
+    <p>© 2026 Orbit Labs</p>
+  </div>
+</div>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" data-theme="light">
+    <div class="hero__card" data-cursor="lg">
+      <canvas class="hero__gl" aria-hidden="true"></canvas>
+      <div class="hero__shade" aria-hidden="true"></div>
+      <div class="hero__top">
+        <span class="mono">Orbit 2.0 — now in early access</span>
+        <span class="mono hero__hint">Move your cursor <svg aria-hidden="true"><use href="#arrow-dr"/></svg></span>
+      </div>
+      <h1 class="hero__title">
+        <span class="line"><span>Work moves at</span></span>
+        <span class="line"><span>the speed of <span class="hl">thought.</span></span></span>
+      </h1>
+    </div>
+    <div class="hero__under">
+      <span class="mono">01 — Overview</span>
+      <span class="mono hero__scroll">Scroll to explore</span>
+      <span class="mono hide-sm">Built for teams of 2–50</span>
+    </div>
+  </section>
+
+  <!-- INTRO (the 3D ribbon flows through here) -->
+  <section class="intro" id="intro" data-theme="light">
+    <h2 class="big rl">
+      <span class="line line--indent"><span>Less busywork.</span></span>
+      <span class="line"><span>More breakthroughs.</span></span>
+    </h2>
+    <div class="intro__grid">
+      <div class="stats">
+        <div class="stat" data-fade><b><span data-count="12">12</span>h</b><span>saved per person, every single week</span></div>
+        <div class="stat" data-fade><b><span data-count="3">3</span>×</b><span>faster replies to clients and leads</span></div>
+        <div class="stat" data-fade><b><span data-count="0">0</span></b><span>meeting notes you’ll ever write again</span></div>
+      </div>
+      <div class="intro__copy">
+        <p class="intro__text" data-fade>Orbit connects your inbox, calendar, docs and chat into one shared memory. Ask it anything about your company, let it draft the follow-ups and hand over the repetitive work — so your team can focus on the ideas only humans can have.</p>
+        <a href="#features" class="pill pill--dark" data-fade data-magnetic><span class="dot"></span><span class="roll" data-roll>How it works</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES (pinned) -->
+  <section class="features" id="features" data-theme="light">
+    <div class="features__inner">
+      <div class="features__left">
+        <p class="mono">(02) What Orbit does</p>
+        <ol class="flist">
+          <li class="fitem is-active">
+            <span class="mono">01</span>
+            <div><h3>Remembers everything</h3><p>Every email, meeting and doc becomes searchable memory. Ask in plain words, get answers with sources.</p></div>
+          </li>
+          <li class="fitem">
+            <span class="mono">02</span>
+            <div><h3>Drafts the follow-up</h3><p>Orbit writes replies and recaps in your tone. You read, tweak and hit send.</p></div>
+          </li>
+          <li class="fitem">
+            <span class="mono">03</span>
+            <div><h3>Automates the busywork</h3><p>Leads, invoices, scheduling. Describe a routine once and Orbit runs it every time.</p></div>
+          </li>
+        </ol>
+        <div class="fprogress" aria-hidden="true"><i></i></div>
+      </div>
+
+      <div class="app" aria-hidden="true">
+        <div class="app__bar"><span></span><span></span><span></span><p class="mono">orbit — workspace</p></div>
+        <div class="app__body">
+          <div class="screen screen--ask">
+            <div class="ask"><svg><use href="#logo"/></svg><span class="ask__text" data-type="What did we promise Kestrel in March?">What did we promise Kestrel in March?</span><span class="caret"></span></div>
+            <div class="answer">
+              <p class="mono answer__label">Orbit · answered in 0.8 s</p>
+              <p class="answer__text">On March 14 you agreed to ship the new onboarding flow by <mark>April 30</mark> and to give Kestrel <mark>10% off</mark> the annual plan.</p>
+              <div class="chips"><span class="chip">Email · Mar 14</span><span class="chip">Proposal v3.pdf</span><span class="chip">#kestrel-launch</span></div>
+            </div>
+          </div>
+
+          <div class="screen screen--draft">
+            <div class="mail">
+              <div class="mail__row"><span class="mono">To</span><span>Jana Veselá — Kestrel</span></div>
+              <div class="mail__row"><span class="mono">Subject</span><span>Onboarding flow is on track for April 30</span></div>
+              <div class="mail__body">
+                <p class="ml">Hi Jana,</p>
+                <p class="ml">quick update — the new onboarding flow is in testing and we’re on track for April 30.</p>
+                <p class="ml">As promised, your 10% annual discount applies from the next invoice.</p>
+                <p class="ml">Talk on Thursday?<br>Petr</p>
+              </div>
+              <div class="mail__foot"><span class="mono">Drafted by Orbit in 2.1 s</span><span class="send"><span class="send__label">Send</span></span></div>
+            </div>
+          </div>
+
+          <div class="screen screen--flow">
+            <div class="flow">
+              <div class="node"><span class="mono">Trigger</span><b>New lead lands in the inbox</b></div>
+              <div class="node"><span class="mono">Orbit</span><b>Qualifies &amp; enriches the lead</b></div>
+              <div class="node"><span class="mono">Action</span><b>Adds it to your CRM</b></div>
+              <div class="node node--lime"><span class="mono">Action</span><b>Books a discovery call</b></div>
+            </div>
+            <div class="flow__count"><b class="js-flow-count">128</b><span class="mono">tasks done for you this week</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK (pinned, card expands) -->
+  <section class="stack" id="stack" data-theme="light">
+    <div class="stack__card" data-theme="dark">
+      <div class="stack__glow"></div>
+      <div class="orbits" aria-hidden="true">
+        <svg class="orbits__svg"></svg>
+        <div class="core"><svg><use href="#logo"/></svg></div>
+        <span class="sat" data-ring="0">Inbox</span>
+        <span class="sat" data-ring="0">Calendar</span>
+        <span class="sat" data-ring="0">CRM</span>
+        <span class="sat" data-ring="1">Docs</span>
+        <span class="sat" data-ring="1">Team chat</span>
+        <span class="sat" data-ring="1">Invoices</span>
+        <span class="sat" data-ring="2">Tasks</span>
+        <span class="sat" data-ring="2">Drive</span>
+      </div>
+    </div>
+    <h2 class="stack__title">
+      <span class="stack__l">Your whole stack</span>
+      <span class="stack__r">in one orbit.</span>
+    </h2>
+    <p class="stack__note mono">40+ integrations · set up in 5 minutes</p>
+  </section>
+
+  <!-- LOGOS -->
+  <section class="logos" data-theme="light">
+    <p class="mono">Teams already in orbit</p>
+    <div class="marquee">
+      <div class="marquee__track">
+        <div class="marquee__unit">
+          <span>Paperplane</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Northwave</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Halcyon &amp; Co.</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Brightwork</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Mosaic Health</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Tandem Labs</span><svg aria-hidden="true"><use href="#logo"/></svg>
+          <span>Vela Logistics</span><svg aria-hidden="true"><use href="#logo"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quote" data-theme="light">
+    <blockquote>
+      <p class="quote__text">“Orbit replaced three tools and two hours of my day. It’s the first AI that actually feels like a colleague.”</p>
+      <footer data-fade><span class="avatar">HK</span><div><b>Hana Kovářová</b><span class="mono">COO, Paperplane</span></div></footer>
+    </blockquote>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing" data-theme="light">
+    <div class="pricing__head">
+      <p class="mono" data-fade>(03) Pricing</p>
+      <h2 class="big rl">
+        <span class="line"><span>Simple pricing.</span></span>
+        <span class="line line--indent"><span>No surprises.</span></span>
+      </h2>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <header><h3>Solo</h3><p>For trying Orbit on your own.</p></header>
+        <div class="plan__price"><b>$0</b><span class="mono">forever</span></div>
+        <ul><li>100 questions a month</li><li>Inbox &amp; calendar</li><li>7-day memory</li></ul>
+        <a href="#cta" class="pill pill--ghost"><span class="roll" data-roll>Start free</span></a>
+      </article>
+      <article class="plan plan--hot">
+        <span class="plan__badge mono">Most popular</span>
+        <header><h3>Team</h3><p>For small teams that move fast.</p></header>
+        <div class="plan__price"><b>$24</b><span class="mono">per seat / month</span></div>
+        <ul><li>Unlimited questions</li><li>All 40+ integrations</li><li>Full company memory</li><li>Automations</li></ul>
+        <a href="#cta" class="pill pill--lime"><span class="roll" data-roll>Get early access</span></a>
+      </article>
+      <article class="plan">
+        <header><h3>Scale</h3><p>For companies with 50+ people.</p></header>
+        <div class="plan__price"><b>Custom</b><span class="mono">annual plans</span></div>
+        <ul><li>SSO &amp; audit log</li><li>EU data residency</li><li>Dedicated onboarding</li><li>99.9% uptime SLA</li></ul>
+        <a href="#cta" class="pill pill--ghost"><span class="roll" data-roll>Talk to sales</span></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- CTA + FOOTER -->
+  <footer class="footer" id="cta" data-theme="dark">
+    <div class="footer__cta">
+      <p class="mono" data-fade>(04) Early access</p>
+      <h2 class="huge rl">
+        <span class="line"><span>Put your work</span></span>
+        <span class="line"><span>in <span class="hl">orbit.</span></span></span>
+      </h2>
+      <form class="signup" data-fade novalidate>
+        <input type="email" name="email" placeholder="you@company.com" aria-label="Work email" autocomplete="email">
+        <button type="submit" class="pill pill--lime"><span class="roll" data-roll>Get early access</span></button>
+      </form>
+      <p class="mono signup__note" data-fade>14 days free · no credit card</p>
+    </div>
+
+    <div class="footer__cols">
+      <div data-fade><h4 class="mono">Product</h4><a href="#features">Features</a><a href="#stack">Integrations</a><a href="#pricing">Pricing</a></div>
+      <div data-fade><h4 class="mono">Company</h4><span>About</span><span>Careers</span><span>Press kit</span></div>
+      <div data-fade><h4 class="mono">Social</h4><span>LinkedIn</span><span>X / Twitter</span><span>YouTube</span></div>
+      <div data-fade><h4 class="mono">Say hello</h4><span>hello@orbit.ai</span><span>Prague · Berlin</span></div>
+    </div>
+
+    <div class="footer__word" aria-hidden="true">orbit</div>
+
+    <div class="footer__bottom">
+      <p>© 2026 Orbit — a fictional brand created as a portfolio piece.</p>
+      <a href="https://mareksevela.com/#weby" data-leave>Concept, design &amp; development — <u>Marek Ševela</u> ↗</a>
+    </div>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
