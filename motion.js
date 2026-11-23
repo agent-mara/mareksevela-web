@@ -14,6 +14,11 @@
 const root = document.documentElement;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+// Plynulé scrollování (Lenis) vypnuto 24. 11. 2026 — na Macu se pralo
+// s vlastním setrvačným scrollem trackpadu a působilo gumově.
+// Zpátky: přepnout na true.
+const PLYNULY_SCROLL = false;
+
 const gsap = window.gsap;
 const ScrollTrigger = window.ScrollTrigger;
 
@@ -22,7 +27,7 @@ const ScrollTrigger = window.ScrollTrigger;
 let lenis = null;
 
 function initLenis() {
-  if (reduced || !window.Lenis) return;
+  if (!PLYNULY_SCROLL || reduced || !window.Lenis) return;
   lenis = new window.Lenis({
     duration: 1.05,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -217,8 +222,10 @@ async function initHero3D() {
     return; // bez internetu / se starým prohlížečem prostě nic, pozadí zůstane
   }
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // antialias vypnutý a nižší strop rozlišení: na retina displeji to je
+  // rozdíl ve čtvrtině vykreslovaných pixelů, okem skoro nepoznatelný
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);

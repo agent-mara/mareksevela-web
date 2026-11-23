@@ -9,37 +9,13 @@
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" content="#08080f" />
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            dark:    '#08080f',
-            dark2:   '#0d0d1a',
-            dark3:   '#11111e',
-            darkcard:'#15152a',
-          },
-          keyframes: {
-            float:    { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-            fadeup:   { '0%': { opacity:'0', transform:'translateY(30px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
-            shimmer:  { '0%': { backgroundPosition: '-200% center' }, '100%': { backgroundPosition: '200% center' } },
-            blobmove: { '0%,100%': { borderRadius:'60% 40% 30% 70%/60% 30% 70% 40%' }, '50%': { borderRadius:'30% 60% 70% 40%/50% 60% 30% 60%' } },
-          },
-          animation: {
-            float:    'float 6s ease-in-out infinite',
-            fadeup:   'fadeup 0.7s ease forwards',
-            shimmer:  'shimmer 3s linear infinite',
-            blobmove: 'blobmove 8s ease-in-out infinite',
-          }
-        }
-      }
-    }
-  </script>
+  <!-- tailwind.css musí být AŽ ZA style.css: stejné pořadí, jaké dělal
+       Tailwind z CDN, který svoje styly vkládal na konec hlavičky -->
+  <link rel="stylesheet" href="tailwind.css" />
+  <!-- Nastavení Tailwindu je od 24.11.2026 předpočítané v tailwind.css -->
   <script>
     // animace zapneme jen když je prohlížeč zvládne a návštěvník je nemá vypnuté
     (function () {
@@ -51,7 +27,8 @@
       }, 2500);
     })();
   </script>
-  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <!-- Lenis (plynulé scrollování) vypnuto 24.11.2026 — kdyby se vracelo,
+       obnovit tenhle řádek: <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script type="importmap">
@@ -832,7 +809,7 @@
           <div class="relative">
             <!-- Photo -->
             <div class="about-photo-wrapper">
-              <img src="foto.jpg" alt="Marek Ševela" class="about-photo-img" />
+              <img loading="lazy" decoding="async" src="foto.jpg" alt="Marek Ševela" class="about-photo-img" />
             </div>
             <!-- Floating badges -->
             <div class="floating-badge top-4 -right-4 md:-right-8">
